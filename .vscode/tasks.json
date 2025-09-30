@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build and Run SFML Project",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "C:/msys64/ucrt64/bin/g++.exe -Wall -Wextra -g3 \"${workspaceFolder}/main.cpp\" -o \"${workspaceFolder}/output/main.exe\" -lsfml-graphics -lsfml-window -lsfml-system; if ($?) { & \"${workspaceFolder}/output/main.exe\" }"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
+        }
+    ]
+}
+

@@ -1,7 +1,9 @@
 
 1. draw pixsel
-    0000 4 bits for command
+    total = 68 bits
+    0000 4 bits for command 
     0101010101010101 16 bits for x postion
     1010101010101010 16 bits for y postion
 
-    red blue green (2 bits for each colur)
+    red       blue      green     alpha      (1 byte for each colur)
+  01010101  10101010  01010101   01010101
