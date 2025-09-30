@@ -1,4 +1,5 @@
 /// the run() takes the main thread while the rest of the mian that run() was called in will be excuted by a logic_thread
+//output_screen.hpp
 
 #include <SFML/Graphics.hpp>
 #include <thread>
@@ -153,7 +154,7 @@ public:
         texts.push_back(text);
     }
 
-    output_screen(string window_name = "window", int para_x = 800, int para_y = 800)
+    output_screen(string window_name = "output window", int para_x = 800, int para_y = 800)
     {
         x = para_x;
         y = para_y;

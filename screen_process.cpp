@@ -1,4 +1,4 @@
-//screen_process.cpp
+// screen_process.cpp
 
 #include <SFML/Graphics.hpp>
 #include <thread>
@@ -6,6 +6,7 @@
 #include <iostream>
 #include <mutex>
 #include <vector>
+#include <windows.h>
 
 using namespace std;
 using namespace sf;
@@ -33,6 +34,7 @@ private:
     vector<Text> user_input_history;
     int line_height = 28;
     string last_input;
+    thread sending_thread;
 
     void handle_text_input(Event &event)
     {
@@ -157,7 +159,7 @@ public:
     {
         x = para_x;
         y = para_y;
-        window = new RenderWindow(VideoMode(x, y), "main window");
+        window = new RenderWindow(VideoMode(x, y), "input screen");
         image.create(x, y);
         texture.loadFromImage(image);
         sprite.setTexture(texture);
@@ -169,6 +171,7 @@ public:
         user_input.setCharacterSize(24);
         user_input.setFillColor(Color::Green);
         user_input.setPosition(10, y - 40); // bottom of window
+        create_pipline();
     }
 
     void add_pixel(int x_position, int y_postion, Color colour = Color::White)
@@ -204,13 +207,49 @@ public:
         if (logic_thread.joinable())
             logic_thread.join();
     }
+
+private:
+    void create_pipline()
+    {
+        HANDLE hPipe = CreateFileA(
+            R"(\\.\pipe\terminalPipe)",
+            GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+
+        if (hPipe == INVALID_HANDLE_VALUE)
+        {
+            cerr << "Could not connect to pipe" << endl;
+            return;
+        }
+
+        cout << "Connected to pipe" << endl;
+        cout << "creating thread" << endl;
+        sending_thread = thread([this, hPipe]()
+                                {
+                                    while (true)
+                                    {
+                                        string msg = getInput();
+                                        if (!msg.empty())
+                                        {
+                                            cout << "sending" << msg << endl;
+                                            DWORD written;
+                                            WriteFile(hPipe, msg.c_str(), msg.size(), &written, NULL);
+                                        }
+                                        Sleep(50); // prevent CPU hog
+                                    }
+
+                                    CloseHandle(hPipe); // close when thread ends
+                                });
+
+        sending_thread.detach(); // run in background
+    }
 };
 
 int main()
 {
+    cout<<"subprocess has started"<<endl;
+    cout<<"screen_process.cpp compleid"<<endl; 
     input_screen scrn;
-    scrn.run([&]() {
-
-    });
+    scrn.run([&]()
+             { cout << "screen_process.cpp runing sucssefuly" << endl; });
     return 0;
 }

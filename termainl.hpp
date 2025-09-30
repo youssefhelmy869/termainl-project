@@ -1,4 +1,4 @@
-//termainl.hpp
+// termainl.hpp
 
 #pragma once
 #include <string>
@@ -15,6 +15,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define _HAS_STD_BYTE 0
 #include <windows.h>
+#include <thread>
 
 using namespace sf;
 using namespace std;
@@ -23,6 +24,8 @@ class termainl
 {
 private:
     output_screen scrn;
+    char output_buffer[256];
+    thread excuting_thread;
 
     template <size_t size>
     string decimal_to_binary(int num)
@@ -81,6 +84,7 @@ public:
 private:
     void spawn_process()
     {
+        cout << "creating subprocess" << endl;
         char cmd[] = "C:\\Users\\ahmed\\OneDrive\\Desktop\\termainl-project\\output\\screen_process.exe";
 
         STARTUPINFOA si;
@@ -113,13 +117,50 @@ private:
             cerr << "Failed to start process: " << cmd << endl;
         }
     }
+    void create_pipline()
+    {
+        cout << "creating pipline" << endl;
+        HANDLE hPipe = CreateNamedPipe(R"(\\.\pipe\terminalPipe)", // Pipe name
+                                       PIPE_ACCESS_INBOUND,        // Only read from this side
+                                       PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+                                       1, 1024, 1024, 0, NULL);
+
+        if (hPipe == INVALID_HANDLE_VALUE)
+        {
+            cerr << "Failed to create pipe" << endl;
+        }
+        else
+        {
+            cout << "termainl.hpp has made the pipeline" << endl;
+        }
+        cout << "Waiting for input process to connect..." << endl;
+        ConnectNamedPipe(hPipe, NULL); // Step 2: wait
+        cout << "Connected!" << endl;
+
+        excuting_thread = thread([this, hPipe]()
+                                 {
+    DWORD bytesRead;
+    while (true) {
+        if (ReadFile(hPipe, output_buffer, sizeof(output_buffer), &bytesRead, NULL)) {
+            string msg(output_buffer, bytesRead);
+            cout << "got :" << msg << endl;
+            execute_binary(msg);
+        }
+    }
+    CloseHandle(hPipe); });
+
+        excuting_thread.detach();
+    }
 
 public:
     template <typename Func>
     termainl(Func f)
     {
         // Start two screen processes
+        create_pipline();
         spawn_process();
-        scrn.run([&]() {});
+        //problem with pipline and process timing 
+        scrn.run([&]()
+                 { cout << "the output screen is on" << endl; });
     }
 };
