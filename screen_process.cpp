@@ -1,4 +1,4 @@
-/// the run() takes the main thread while the rest of the mian that run() was called in will be excuted by a logic_thread
+//screen_process.cpp
 
 #include <SFML/Graphics.hpp>
 #include <thread>
@@ -10,7 +10,7 @@
 using namespace std;
 using namespace sf;
 
-class output_screen
+class input_screen
 {
 private:
     RenderWindow *window = nullptr;
@@ -82,7 +82,8 @@ public:
             ready = false;
             return last_input;
         }
-        else{
+        else
+        {
             return "";
         }
     }
@@ -130,7 +131,6 @@ private:
                 window->draw(user_input_history.back());
             }
 
-
             for (const auto &t : texts)
             {
                 window->draw(t);
@@ -153,7 +153,7 @@ public:
         texts.push_back(text);
     }
 
-    output_screen(int para_x = 800, int para_y = 800)
+    input_screen(int para_x = 800, int para_y = 800)
     {
         x = para_x;
         y = para_y;
@@ -196,7 +196,7 @@ public:
         }
     }
 
-    ~output_screen()
+    ~input_screen()
     {
         runing = false;
         if (window && window->isOpen())
@@ -205,3 +205,12 @@ public:
             logic_thread.join();
     }
 };
+
+int main()
+{
+    input_screen scrn;
+    scrn.run([&]() {
+
+    });
+    return 0;
+}

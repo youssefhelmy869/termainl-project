@@ -10,7 +10,7 @@
 using namespace std;
 using namespace sf;
 
-class screen
+class output_screen
 {
 private:
     RenderWindow *window = nullptr;
@@ -82,7 +82,8 @@ public:
             ready = false;
             return last_input;
         }
-        else{
+        else
+        {
             return "";
         }
     }
@@ -130,7 +131,6 @@ private:
                 window->draw(user_input_history.back());
             }
 
-
             for (const auto &t : texts)
             {
                 window->draw(t);
@@ -153,11 +153,11 @@ public:
         texts.push_back(text);
     }
 
-    screen(int para_x = 800, int para_y = 800)
+    output_screen(string window_name = "window", int para_x = 800, int para_y = 800)
     {
         x = para_x;
         y = para_y;
-        window = new RenderWindow(VideoMode(x, y), "main window");
+        window = new RenderWindow(VideoMode(x, y), window_name);
         image.create(x, y);
         texture.loadFromImage(image);
         sprite.setTexture(texture);
@@ -196,7 +196,7 @@ public:
         }
     }
 
-    ~screen()
+    ~output_screen()
     {
         runing = false;
         if (window && window->isOpen())
