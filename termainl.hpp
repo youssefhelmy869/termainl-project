@@ -76,9 +76,17 @@ public:
     void execute_binary(const string &command)
     {
         string main_command = command.substr(0, 4);
-        if (main_command == "0000")
+        cout << "main command = " << main_command << endl;
+        cout << "command size = " << command.size() << endl;
+        if (main_command == "0000") // main function to excut incoming binarys
+
         {
-            cout<<"drawing pixsel"<<endl;
+            if (command.size() != 68)
+            {
+                cerr << "command size is not right" << endl;
+            }
+
+            cout << "drawing pixsel" << endl;
             draw_pixel(command);
         }
     }
@@ -172,5 +180,4 @@ public:
         scrn.run([&]()
                  { cout << "the output screen is on" << endl; });
     }
-    
 };
