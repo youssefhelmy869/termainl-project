@@ -83,20 +83,57 @@ private:
 public:
     void execute_binary(const string &command)
     {
-        string main_command = command.substr(0, 4);
-        cout << "command number" << command_index << endl;
-        cout << "main command = " << main_command << endl;
-        cout << "command size = " << command.size() << endl;
-        if (main_command == "0000") // main function to excut incoming binarys
 
+        bool is_binary = true;
+        for (char ch : command)
         {
-            if (command.size() != 60)
+            if (ch != '1' && ch != '0')
             {
-                cerr << "command size is not right" << endl;
+                is_binary = false;
             }
+        }
 
-            cout << "drawing pixsel" << endl;
-            draw_pixel(command);
+        if (is_binary == true)
+        {
+            cout << "command is binary" << endl;
+            string main_command = command.substr(0, 4);
+            cout << "command number" << command_index << endl;
+            cout << "main command = " << main_command << endl;
+            cout << "command size = " << command.size() << endl;
+
+            if (main_command == "0000") // main function to excut incoming binarys
+                                        // display a pixsel
+
+            {
+                if (command.size() != 60)
+                {
+                    cerr << "command size is not right" << endl;
+                }
+
+                cout << "drawing pixsel" << endl;
+                draw_pixel(command);
+            }
+            else if (main_command == "0001") // write the last data added
+            {
+                string data = commands[command_index -1];
+                cout << "data to write to screen = " << data << endl;
+
+                // get x and y
+                string s_x = command.substr(4, 16);
+                string s_y = command.substr(20, 16);
+
+                // convert to ints
+                int x = binary_to_decimal(s_x);
+                int y = binary_to_decimal(s_y);
+                cout << "x = " << x << endl;
+                cout << "y =" << y << endl;
+
+                scrn.write_to_window(data, x, y);
+            }
+        }
+        else
+        {
+            cout << "command is data" << endl;
         }
     }
 
