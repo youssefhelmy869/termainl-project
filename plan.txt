@@ -5,5 +5,7 @@
     0101010101010101 16 bits for x postion
     1010101010101010 16 bits for y postion
 
-    red       blue      green     alpha      (1 byte for each colur)
-  01010101  10101010  01010101   01010101
+    red       blue      green         (1 byte for each colur)
+  01010101  10101010  01010101   
+  ex:
+    000000000000001111110000000000111111010101011010101001010101

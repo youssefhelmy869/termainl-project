@@ -28,6 +28,10 @@ private:
     thread excuting_thread;
     vector<string> commands;
 
+public:
+    int command_index = 0;
+
+private:
     template <size_t size>
     string decimal_to_binary(int num)
     {
@@ -54,21 +58,25 @@ private:
 
     void draw_pixel(const string &command)
     {
+
         string x_pos = command.substr(4, 16);
         string y_pos = command.substr(20, 16);
         string s_red = command.substr(36, 8);
         string s_green = command.substr(44, 8);
         string s_blue = command.substr(52, 8);
-        string s_alpha = command.substr(60, 8);
 
         int x = binary_to_decimal(x_pos);
         int y = binary_to_decimal(y_pos);
         int red = binary_to_decimal(s_red);
         int green = binary_to_decimal(s_green);
         int blue = binary_to_decimal(s_blue);
-        int alpha = binary_to_decimal(s_alpha);
 
-        Color c = calculate_colour(red, green, blue, alpha);
+        Color c = calculate_colour(red, green, blue, 255);
+
+        cout << "x = " << x << endl;
+        cout << "y = " << y << endl;
+        cout << " red " << " | " << " blue" << " | " << " green" << endl;
+        cout << " " << red << " " << blue << " " << green << endl;
         scrn.add_pixel(x, y, c);
     }
 
@@ -76,12 +84,13 @@ public:
     void execute_binary(const string &command)
     {
         string main_command = command.substr(0, 4);
+        cout << "command number" << command_index << endl;
         cout << "main command = " << main_command << endl;
         cout << "command size = " << command.size() << endl;
         if (main_command == "0000") // main function to excut incoming binarys
 
         {
-            if (command.size() != 68)
+            if (command.size() != 60)
             {
                 cerr << "command size is not right" << endl;
             }
@@ -160,6 +169,7 @@ private:
             cout << "got :" << msg << endl;
             commands.push_back(msg);
             execute_binary(msg);
+            ++command_index; 
         }
     }
     CloseHandle(hPipe); });
