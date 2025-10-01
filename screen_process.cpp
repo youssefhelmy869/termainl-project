@@ -211,6 +211,8 @@ public:
 private:
     void create_pipline()
     {
+        cout<<" screen process create pipline function called"<<endl;
+
         HANDLE hPipe = CreateFileA(
             R"(\\.\pipe\terminalPipe)",
             GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);

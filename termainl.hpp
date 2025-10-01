@@ -26,6 +26,7 @@ private:
     output_screen scrn;
     char output_buffer[256];
     thread excuting_thread;
+    vector<string> commands;
 
     template <size_t size>
     string decimal_to_binary(int num)
@@ -77,6 +78,7 @@ public:
         string main_command = command.substr(0, 4);
         if (main_command == "0000")
         {
+            cout<<"drawing pixsel"<<endl;
             draw_pixel(command);
         }
     }
@@ -114,9 +116,12 @@ private:
         }
         else
         {
+            DWORD error = GetLastError();
             cerr << "Failed to start process: " << cmd << endl;
+            cerr << "error( " << error << " )" << endl;
         }
     }
+
     void create_pipline()
     {
         cout << "creating pipline" << endl;
@@ -140,10 +145,12 @@ private:
         excuting_thread = thread([this, hPipe]()
                                  {
     DWORD bytesRead;
+
     while (true) {
         if (ReadFile(hPipe, output_buffer, sizeof(output_buffer), &bytesRead, NULL)) {
             string msg(output_buffer, bytesRead);
             cout << "got :" << msg << endl;
+            commands.push_back(msg);
             execute_binary(msg);
         }
     }
@@ -157,10 +164,13 @@ public:
     termainl(Func f)
     {
         // Start two screen processes
-        create_pipline();
+
         spawn_process();
-        //problem with pipline and process timing 
+        create_pipline();
+
+        // problem with pipline and process timing
         scrn.run([&]()
                  { cout << "the output screen is on" << endl; });
     }
+    
 };
